@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard</title>
+        <style>
+            #messages, #comments {
+                border: 1px solid black
+            }
+        </style>
+    </head>
+    <body>
+        <h1>{{pageOwner.first_name}} {{pageOwner.last_name}}</h1>
+        <p>Registered at: {{pageOwner.created_at}}</p>
+        <p>User ID: {{pageOwner.id}}</p>
+        <p>Email address: {{pageOwner.email}}</p>
+        <p>Leave a message for {{pageOwner.first_name}}</p>
+        <form action='/message/{{request.session.id}}/{{pageOwner.id}}' method='POST'>
+            {% csrf_token %}
+            <textarea name="message" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Post">
+        </form>
+         <div id="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.created_for_id == pageOwner.id %}
+                    <p>{{message.user_id}} Person who wrote it</p>
+                    <p>{{message.message}}</p>
+                <div id="comments">
+                {% if comments %}
+                    {% for comment in comments %}
+                        {% if message.id == comment.message_id %}
+                            <p>{{comment.user_id}} Wrote this {{comment.created_at}}</p>
+                            <p>{{comment.comment}}</p>
+                        {% endif %}
+                    {% endfor%}
+                </div>
+        </div> 
+                <p>Post a Comment</p>
+                <form action="/comment/{{request.session.id}}/{{message.id}}/{{pageOwner.id}}" method="POST">
+                    {% csrf_token %}
+                    <textarea name="comment" rows="4" cols="50"></textarea><br/>
+                    <input type="submit" name="submit" value="Post a comment">
+                </form>
+                {% endif %}
+                {% endif %}
+                {% endfor%}
+            {% endif %}
+    </body>
+</html>
